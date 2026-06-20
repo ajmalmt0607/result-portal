@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwHE4Mv9kCW41luNKk5TGU866YaoSMrRHkp6o6vv3czprT70mEV3z5QOEIex_S-2lE/exec";
+  "https://script.google.com/macros/s/AKfycbzM2ophmrglO18wWd6F7Dc8-WK1fqKKxvwyUSLvDuRY8f5a6jSpRYCraGa9Hz5OUjk6/exec";
 
 export default function App() {
   const [enrolNo, setEnrolNo] = useState("");

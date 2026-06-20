@@ -36,9 +36,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen text-center bg-slate-100">
+    <div className="min-h-screen bg-slate-100">
 
-      <div className="bg-indigo-700 text-white py-8 shadow-lg">
+      <div className="bg-indigo-700 text-center text-white py-8 shadow-lg">
         <div className="max-w-6xl mx-auto px-4">
 
           <h1 className="text-3xl font-bold">

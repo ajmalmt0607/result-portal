@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxJf0TrTW7r6IkrXGqcnktzw4hKmMGtPnC7iTcU_9HPHMxD0ygijySMpDruCa5H7AJw3w/exec";
+  "https://script.google.com/macros/s/AKfycbw0hsGzRpi0Wuftm1K6HasJ5Ihia3FyAxMopDgZSZM_bqoyfxcBEZQtaJR2U8DtMTPEzg/exec";
 
 export default function App() {
   const [enrolNo, setEnrolNo] = useState("");
@@ -279,12 +279,102 @@ export default function App() {
         {loading && (
           <div
             className="
-              text-center
+              bg-white
+              rounded-2xl
+              shadow-lg
               mt-8
-              text-gray-600
+              py-12
+              px-6
+              flex
+              flex-col
+              items-center
+              justify-center
             "
           >
-            Loading result...
+            {/* NEEDLE & THREAD LOADER */}
+            <div className="relative h-24 w-24">
+
+              <svg
+                viewBox="0 0 100 100"
+                className="h-24 w-24 animate-[thread-spin_3s_linear_infinite]"
+              >
+                <defs>
+                  <linearGradient
+                    id="loaderGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stopColor="#4f46e5" />
+                    <stop offset="100%" stopColor="#f59e0b" />
+                  </linearGradient>
+                </defs>
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  fill="none"
+                  stroke="url(#loaderGradient)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray="6 10"
+                />
+              </svg>
+
+              <div className="absolute inset-0 flex items-center justify-center animate-[needle-glide_1.6s_ease-in-out_infinite]">
+                <svg
+                  width="34"
+                  height="34"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="drop-shadow-sm"
+                >
+                  <path
+                    d="M3.5 20.5L13 11"
+                    stroke="#f59e0b"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeDasharray="2 2.6"
+                    className="animate-[stitch-flow_1s_linear_infinite]"
+                  />
+                  <path
+                    d="M12 11.5L18.7 4.8a2.1 2.1 0 0 1 3 3L14.5 14.5"
+                    stroke="#4338ca"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="20" cy="3.5" r="1.15" fill="#4338ca" />
+                </svg>
+              </div>
+
+            </div>
+
+            <p
+              className="
+                mt-6
+                text-lg
+                font-semibold
+                bg-linear-to-r
+                from-indigo-600
+                via-amber-500
+                to-indigo-600
+                bg-size-[200%_auto]
+                bg-clip-text
+                text-transparent
+                animate-[shimmer-text_2.2s_linear_infinite]
+              "
+            >
+              Tailoring your results
+            </p>
+
+            <div className="mt-3 flex gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-[fade-dot_1.4s_ease-in-out_infinite]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-[fade-dot_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-[fade-dot_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
+            </div>
+
           </div>
         )}
 

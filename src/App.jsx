@@ -1,44 +1,108 @@
 import { useState } from "react";
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzM2ophmrglO18wWd6F7Dc8-WK1fqKKxvwyUSLvDuRY8f5a6jSpRYCraGa9Hz5OUjk6/exec";
+  "https://script.google.com/macros/s/AKfycbw0hsGzRpi0Wuftm1K6HasJ5Ihia3FyAxMopDgZSZM_bqoyfxcBEZQtaJR2U8DtMTPEzg/exec";
+
 
 export default function App() {
+
   const [enrolNo, setEnrolNo] = useState("");
+
   const [loading, setLoading] = useState(false);
-  const [student, setStudent] = useState(null);
+
+  const [results, setResults] = useState([]);
+
   const [error, setError] = useState("");
 
+
+  // =====================================================
+  // SEARCH
+  // =====================================================
+
   const handleSearch = async () => {
-    if (!enrolNo.trim()) return;
+
+    if (!enrolNo.trim()) {
+      setError("Please enter your enrolment number");
+      return;
+    }
+
 
     setLoading(true);
+
     setError("");
-    setStudent(null);
+
+    setResults([]);
+
 
     try {
+
       const res = await fetch(
-        `${API_URL}?enrol=${enrolNo}`
+        `${API_URL}?enrol=${encodeURIComponent(
+          enrolNo.trim()
+        )}`
       );
+
+
+      if (!res.ok) {
+        throw new Error("API request failed");
+      }
+
 
       const data = await res.json();
 
+
       if (!data.found) {
+
         setError("Result not found");
+
       } else {
-        setStudent(data);
+
+        setResults(data.results);
+
       }
-    } catch {
-      setError("Unable to fetch result");
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      setError(
+        "Unable to fetch result. Please try again."
+      );
+
+    } finally {
+
+      setLoading(false);
+
     }
 
-    setLoading(false);
   };
 
+
+  // =====================================================
+  // ENTER KEY
+  // =====================================================
+
+  const handleKeyDown = (event) => {
+
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+
+  };
+
+
   return (
+
     <div className="min-h-screen bg-slate-100">
 
+
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
       <div className="bg-indigo-700 text-center text-white py-8 shadow-lg">
+
         <div className="max-w-6xl mx-auto px-4">
 
           <h1 className="text-3xl font-bold">
@@ -46,13 +110,23 @@ export default function App() {
           </h1>
 
           <p className="mt-2 text-indigo-100">
-            International Diploma in Montessori Teachers Training
+            Examination Results
           </p>
 
         </div>
+
       </div>
 
+
+
+      {/* =================================================
+          MAIN
+      ================================================= */}
+
       <div className="max-w-4xl mx-auto p-4 md:p-8">
+
+
+        {/* SEARCH BOX */}
 
         <div className="bg-white rounded-2xl shadow-lg p-6">
 
@@ -60,138 +134,342 @@ export default function App() {
             Check Examination Result
           </h2>
 
+
           <div className="flex flex-col md:flex-row gap-3">
 
+
             <input
+
               type="text"
+
               placeholder="Enter Enrol Number"
+
               value={enrolNo}
-              onChange={(e) =>
-                setEnrolNo(e.target.value)
+
+              onChange={(event) =>
+                setEnrolNo(event.target.value)
               }
-              className="border rounded-lg p-3 flex-1"
+
+              onKeyDown={handleKeyDown}
+
+              className="
+                border
+                border-gray-300
+                rounded-lg
+                p-3
+                flex-1
+                focus:outline-none
+                focus:ring-2
+                focus:ring-indigo-500
+              "
+
             />
 
+
             <button
+
               onClick={handleSearch}
-              className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700"
+
+              disabled={loading}
+
+              className="
+                bg-indigo-600
+                text-white
+                px-6
+                py-3
+                rounded-lg
+                hover:bg-indigo-700
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+              "
+
             >
-              Search
+
+              {loading ? "Searching..." : "Search"}
+
             </button>
+
 
           </div>
 
         </div>
 
+
+
+        {/* =================================================
+            LOADING
+        ================================================= */}
+
         {loading && (
-          <div className="text-center mt-8">
-            Loading...
+
+          <div className="text-center mt-8 text-gray-600">
+
+            Loading result...
+
           </div>
+
         )}
+
+
+
+        {/* =================================================
+            ERROR
+        ================================================= */}
 
         {error && (
-          <div className="bg-red-50 text-red-600 mt-8 p-4 rounded-lg">
+
+          <div className="
+            bg-red-50
+            border
+            border-red-200
+            text-red-600
+            mt-8
+            p-4
+            rounded-lg
+          ">
+
             {error}
+
           </div>
+
         )}
 
-        {student && (
-          <div className="bg-white mt-8 rounded-2xl shadow-lg overflow-hidden">
 
-            <div className="p-6 border-b">
 
-              <h3 className="text-2xl font-bold">
-                {student.name}
-              </h3>
+        {/* =================================================
+            RESULTS
+        ================================================= */}
 
-              <p className="text-gray-500">
-                Enrol No: {student.enrol_no}
+        {results.length > 0 && (
+
+          <div className="mt-8 space-y-8">
+
+
+            {/* STUDENT INFORMATION */}
+
+            <div className="
+              bg-white
+              rounded-2xl
+              shadow-lg
+              p-6
+            ">
+
+              <p className="
+                text-sm
+                text-gray-500
+                uppercase
+                tracking-wide
+              ">
+
+                Student
+
+              </p>
+
+
+              <h2 className="
+                text-2xl
+                font-bold
+                text-gray-900
+                mt-1
+              ">
+
+                {results[0].name}
+
+              </h2>
+
+
+              <p className="text-gray-500 mt-1">
+
+                Enrol No: {results[0].enrol_no}
+
               </p>
 
             </div>
 
-            <div className="overflow-x-auto">
 
-              <table className="w-full">
 
-                <thead>
+            {/* =================================================
+                EACH RESULT
+            ================================================= */}
 
-                  <tr className="bg-gray-100">
-                    <th className="text-left p-4">
-                      Subject
-                    </th>
+            {results.map((student, index) => (
 
-                    <th className="text-right p-4">
-                      Mark
-                    </th>
-                  </tr>
+              <div
+                key={`${student.sheet}-${index}`}
+                className="
+                  bg-white
+                  rounded-2xl
+                  shadow-lg
+                  overflow-hidden
+                "
+              >
 
-                </thead>
 
-                <tbody>
+                {/* COURSE HEADER */}
 
-                  {student.subjects.map(
-                    (subject, index) => (
-                      <tr
-                        key={index}
-                        className="border-t"
-                      >
-                        <td className="p-4">
-                          {subject.subject}
-                        </td>
+                <div className="
+                  p-6
+                  border-b
+                  bg-white
+                ">
 
-                        <td className="p-4 text-right font-medium">
-                          {subject.mark}
-                        </td>
+
+                  <p className="
+                    text-sm
+                    font-semibold
+                    text-indigo-600
+                    uppercase
+                  ">
+
+                    {student.course}
+
+                  </p>
+
+
+                  <h3 className="
+                    text-2xl
+                    font-bold
+                    mt-1
+                  ">
+
+                    {student.year}
+
+                  </h3>
+
+
+                </div>
+
+
+
+                {/* SUBJECT TABLE */}
+
+                <div className="overflow-x-auto">
+
+                  <table className="w-full">
+
+
+                    <thead>
+
+                      <tr className="bg-gray-100">
+
+                        <th className="
+                          text-left
+                          p-4
+                          font-semibold
+                        ">
+
+                          Subject
+
+                        </th>
+
+
+                        <th className="
+                          text-right
+                          p-4
+                          font-semibold
+                        ">
+
+                          Mark
+
+                        </th>
+
                       </tr>
-                    )
-                  )}
 
-                </tbody>
+                    </thead>
 
-              </table>
 
-            </div>
 
-            <div className="p-6 bg-slate-50">
+                    <tbody>
 
-              <div className="flex justify-between mb-3">
+                      {student.subjects.map(
+                        (subject, subjectIndex) => (
 
-                <span className="font-semibold">
-                  Total Mark
-                </span>
+                          <tr
+                            key={subjectIndex}
+                            className="border-t"
+                          >
 
-                <span className="font-bold">
-                  {student.total}
-                </span>
+                            <td className="p-4">
+
+                              {subject.subject}
+
+                            </td>
+
+
+                            <td className="
+                              p-4
+                              text-right
+                              font-medium
+                            ">
+
+                              {subject.mark}
+
+                            </td>
+
+                          </tr>
+
+                        )
+                      )}
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+
+
+                {/* TOTAL */}
+
+                <div className="
+                  p-6
+                  bg-slate-50
+                ">
+
+
+                  <div className="
+                    flex
+                    justify-between
+                    items-center
+                  ">
+
+
+                    <span className="font-semibold">
+
+                      Total Mark
+
+                    </span>
+
+
+                    <span className="
+                      font-bold
+                      text-xl
+                    ">
+
+                      {student.total}
+
+                    </span>
+
+
+                  </div>
+
+
+                </div>
+
 
               </div>
 
-              <div className="flex justify-between">
-
-                <span className="font-semibold">
-                  Result
-                </span>
-
-                <span
-                  className={`font-bold ${
-                    student.result === "PASS"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {student.result}
-                </span>
-
-              </div>
-
-            </div>
+            ))}
 
           </div>
+
         )}
+
 
       </div>
 
     </div>
+
   );
+
 }

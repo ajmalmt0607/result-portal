@@ -1,29 +1,111 @@
 import { useState } from "react";
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbw0hsGzRpi0Wuftm1K6HasJ5Ihia3FyAxMopDgZSZM_bqoyfxcBEZQtaJR2U8DtMTPEzg/exec";
+  "https://script.google.com/macros/s/AKfycbzM2ophmrglO18wWd6F7Dc8-WK1fqKKxvwyUSLvDuRY8f5a6jSpRYCraGa9Hz5OUjk6/exec";
 
+
+// ============================================================
+// JSONP FUNCTION
+// ============================================================
+
+function fetchResults(enrolNo) {
+
+  return new Promise((resolve, reject) => {
+
+    const callbackName =
+      `resultCallback_${Date.now()}`;
+
+
+    // Create global callback
+    window[callbackName] = (data) => {
+
+      resolve(data);
+
+      // Remove callback
+      delete window[callbackName];
+
+      // Remove script
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+    };
+
+
+    const script =
+      document.createElement("script");
+
+
+    const url =
+      `${API_URL}?enrol=${encodeURIComponent(
+        enrolNo
+      )}&callback=${callbackName}`;
+
+
+    script.src = url;
+
+
+    script.onerror = () => {
+
+      reject(
+        new Error(
+          "Unable to connect to result API"
+        )
+      );
+
+
+      delete window[callbackName];
+
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+    };
+
+
+    document.body.appendChild(script);
+
+  });
+
+}
+
+
+
+// ============================================================
+// APP
+// ============================================================
 
 export default function App() {
 
-  const [enrolNo, setEnrolNo] = useState("");
+  const [enrolNo, setEnrolNo] =
+    useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
-  const [results, setResults] = useState([]);
+  const [results, setResults] =
+    useState([]);
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
 
 
-  // =====================================================
+
+  // ==========================================================
   // SEARCH
-  // =====================================================
+  // ==========================================================
 
   const handleSearch = async () => {
 
     if (!enrolNo.trim()) {
-      setError("Please enter your enrolment number");
+
+      setError(
+        "Please enter your enrolment number"
+      );
+
       return;
+
     }
 
 
@@ -36,39 +118,47 @@ export default function App() {
 
     try {
 
-      const res = await fetch(
-        `${API_URL}?enrol=${encodeURIComponent(
+      const data =
+        await fetchResults(
           enrolNo.trim()
-        )}`
+        );
+
+
+      console.log(
+        "RESULT:",
+        data
       );
-
-
-      if (!res.ok) {
-        throw new Error("API request failed");
-      }
-
-
-      const data = await res.json();
 
 
       if (!data.found) {
 
-        setError("Result not found");
+        setError(
+          data.message ||
+          "Result not found"
+        );
 
-      } else {
-
-        setResults(data.results);
+        return;
 
       }
 
 
+      setResults(
+        data.results || []
+      );
+
+
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "RESULT ERROR:",
+        error
+      );
+
 
       setError(
         "Unable to fetch result. Please try again."
       );
+
 
     } finally {
 
@@ -79,38 +169,74 @@ export default function App() {
   };
 
 
-  // =====================================================
+
+  // ==========================================================
   // ENTER KEY
-  // =====================================================
+  // ==========================================================
 
   const handleKeyDown = (event) => {
 
     if (event.key === "Enter") {
+
       handleSearch();
+
     }
 
   };
 
+
+
+  // ==========================================================
+  // UI
+  // ==========================================================
 
   return (
 
     <div className="min-h-screen bg-slate-100">
 
 
-      {/* =================================================
-          HEADER
-      ================================================= */}
+      {/* HEADER */}
 
-      <div className="bg-indigo-700 text-center text-white py-8 shadow-lg">
+      <div
+        className="
+          bg-indigo-700
+          text-center
+          text-white
+          py-8
+          shadow-lg
+        "
+      >
 
-        <div className="max-w-6xl mx-auto px-4">
+        <div
+          className="
+            max-w-6xl
+            mx-auto
+            px-4
+          "
+        >
 
-          <h1 className="text-3xl font-bold">
+          <h1
+            className="
+              text-3xl
+              md:text-4xl
+              font-bold
+            "
+          >
+
             THE BEE ACADEMY
+
           </h1>
 
-          <p className="mt-2 text-indigo-100">
+
+          <p
+            className="
+              mt-2
+              text-indigo-100
+            "
+          >
+
             Examination Results
+
           </p>
 
         </div>
@@ -119,35 +245,60 @@ export default function App() {
 
 
 
-      {/* =================================================
-          MAIN
-      ================================================= */}
+      {/* MAIN */}
 
-      <div className="max-w-4xl mx-auto p-4 md:p-8">
+      <div
+        className="
+          max-w-4xl
+          mx-auto
+          p-4
+          md:p-8
+        "
+      >
 
 
-        {/* SEARCH BOX */}
+        {/* SEARCH */}
 
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div
+          className="
+            bg-white
+            rounded-2xl
+            shadow-lg
+            p-6
+          "
+        >
 
-          <h2 className="text-xl font-semibold mb-4">
+          <h2
+            className="
+              text-xl
+              font-semibold
+              mb-4
+            "
+          >
+
             Check Examination Result
+
           </h2>
 
 
-          <div className="flex flex-col md:flex-row gap-3">
-
+          <div
+            className="
+              flex
+              flex-col
+              md:flex-row
+              gap-3
+            "
+          >
 
             <input
-
               type="text"
-
               placeholder="Enter Enrol Number"
-
               value={enrolNo}
 
-              onChange={(event) =>
-                setEnrolNo(event.target.value)
+              onChange={(e) =>
+                setEnrolNo(
+                  e.target.value
+                )
               }
 
               onKeyDown={handleKeyDown}
@@ -162,7 +313,6 @@ export default function App() {
                 focus:ring-2
                 focus:ring-indigo-500
               "
-
             />
 
 
@@ -178,17 +328,18 @@ export default function App() {
                 px-6
                 py-3
                 rounded-lg
+                font-medium
                 hover:bg-indigo-700
                 disabled:opacity-50
-                disabled:cursor-not-allowed
               "
-
             >
 
-              {loading ? "Searching..." : "Search"}
+              {loading
+                ? "Searching..."
+                : "Search"
+              }
 
             </button>
-
 
           </div>
 
@@ -196,13 +347,17 @@ export default function App() {
 
 
 
-        {/* =================================================
-            LOADING
-        ================================================= */}
+        {/* LOADING */}
 
         {loading && (
 
-          <div className="text-center mt-8 text-gray-600">
+          <div
+            className="
+              text-center
+              mt-8
+              text-gray-600
+            "
+          >
 
             Loading result...
 
@@ -212,21 +367,21 @@ export default function App() {
 
 
 
-        {/* =================================================
-            ERROR
-        ================================================= */}
+        {/* ERROR */}
 
         {error && (
 
-          <div className="
-            bg-red-50
-            border
-            border-red-200
-            text-red-600
-            mt-8
-            p-4
-            rounded-lg
-          ">
+          <div
+            className="
+              bg-red-50
+              border
+              border-red-200
+              text-red-600
+              mt-8
+              p-4
+              rounded-lg
+            "
+          >
 
             {error}
 
@@ -236,51 +391,64 @@ export default function App() {
 
 
 
-        {/* =================================================
-            RESULTS
-        ================================================= */}
+        {/* RESULTS */}
 
         {results.length > 0 && (
 
-          <div className="mt-8 space-y-8">
+          <div
+            className="
+              mt-8
+              space-y-8
+            "
+          >
 
 
-            {/* STUDENT INFORMATION */}
+            {/* STUDENT */}
 
-            <div className="
-              bg-white
-              rounded-2xl
-              shadow-lg
-              p-6
-            ">
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                shadow-lg
+                p-6
+              "
+            >
 
-              <p className="
-                text-sm
-                text-gray-500
-                uppercase
-                tracking-wide
-              ">
+              <p
+                className="
+                  text-sm
+                  text-gray-500
+                  uppercase
+                "
+              >
 
                 Student
 
               </p>
 
 
-              <h2 className="
-                text-2xl
-                font-bold
-                text-gray-900
-                mt-1
-              ">
+              <h2
+                className="
+                  text-2xl
+                  font-bold
+                  mt-1
+                "
+              >
 
                 {results[0].name}
 
               </h2>
 
 
-              <p className="text-gray-500 mt-1">
+              <p
+                className="
+                  text-gray-500
+                  mt-1
+                "
+              >
 
-                Enrol No: {results[0].enrol_no}
+                Enrol No:{" "}
+                {results[0].enrol_no}
 
               </p>
 
@@ -288,183 +456,223 @@ export default function App() {
 
 
 
-            {/* =================================================
-                EACH RESULT
-            ================================================= */}
+            {/* EACH RESULT */}
 
-            {results.map((student, index) => (
+            {results.map(
+              (student, index) => (
 
-              <div
-                key={`${student.sheet}-${index}`}
-                className="
-                  bg-white
-                  rounded-2xl
-                  shadow-lg
-                  overflow-hidden
-                "
-              >
+                <div
+                  key={
+                    `${student.sheet}-${index}`
+                  }
 
-
-                {/* COURSE HEADER */}
-
-                <div className="
-                  p-6
-                  border-b
-                  bg-white
-                ">
+                  className="
+                    bg-white
+                    rounded-2xl
+                    shadow-lg
+                    overflow-hidden
+                  "
+                >
 
 
-                  <p className="
-                    text-sm
-                    font-semibold
-                    text-indigo-600
-                    uppercase
-                  ">
+                  {/* COURSE */}
 
-                    {student.course}
+                  <div
+                    className="
+                      p-6
+                      border-b
+                    "
+                  >
 
-                  </p>
+                    <p
+                      className="
+                        text-sm
+                        font-semibold
+                        text-indigo-600
+                        uppercase
+                      "
+                    >
 
+                      {student.course}
 
-                  <h3 className="
-                    text-2xl
-                    font-bold
-                    mt-1
-                  ">
-
-                    {student.year}
-
-                  </h3>
-
-
-                </div>
+                    </p>
 
 
+                    <h3
+                      className="
+                        text-2xl
+                        font-bold
+                        mt-1
+                      "
+                    >
 
-                {/* SUBJECT TABLE */}
+                      {student.year}
 
-                <div className="overflow-x-auto">
+                    </h3>
 
-                  <table className="w-full">
-
-
-                    <thead>
-
-                      <tr className="bg-gray-100">
-
-                        <th className="
-                          text-left
-                          p-4
-                          font-semibold
-                        ">
-
-                          Subject
-
-                        </th>
-
-
-                        <th className="
-                          text-right
-                          p-4
-                          font-semibold
-                        ">
-
-                          Mark
-
-                        </th>
-
-                      </tr>
-
-                    </thead>
+                  </div>
 
 
 
-                    <tbody>
+                  {/* SUBJECTS */}
 
-                      {student.subjects.map(
-                        (subject, subjectIndex) => (
+                  <div
+                    className="
+                      overflow-x-auto
+                    "
+                  >
 
-                          <tr
-                            key={subjectIndex}
-                            className="border-t"
+                    <table
+                      className="
+                        w-full
+                      "
+                    >
+
+                      <thead>
+
+                        <tr
+                          className="
+                            bg-gray-100
+                          "
+                        >
+
+                          <th
+                            className="
+                              text-left
+                              p-4
+                            "
                           >
 
-                            <td className="p-4">
+                            Subject
 
-                              {subject.subject}
-
-                            </td>
+                          </th>
 
 
-                            <td className="
-                              p-4
+                          <th
+                            className="
                               text-right
-                              font-medium
-                            ">
+                              p-4
+                            "
+                          >
 
-                              {subject.mark}
+                            Mark
 
-                            </td>
+                          </th>
 
-                          </tr>
+                        </tr>
 
-                        )
-                      )}
-
-                    </tbody>
-
-                  </table>
-
-                </div>
+                      </thead>
 
 
+                      <tbody>
 
-                {/* TOTAL */}
+                        {student.subjects.map(
+                          (
+                            subject,
+                            subjectIndex
+                          ) => (
 
-                <div className="
-                  p-6
-                  bg-slate-50
-                ">
+                            <tr
+                              key={
+                                subjectIndex
+                              }
+
+                              className="
+                                border-t
+                              "
+                            >
+
+                              <td
+                                className="
+                                  p-4
+                                "
+                              >
+
+                                {
+                                  subject.subject
+                                }
+
+                              </td>
 
 
-                  <div className="
-                    flex
-                    justify-between
-                    items-center
-                  ">
+                              <td
+                                className="
+                                  p-4
+                                  text-right
+                                  font-semibold
+                                "
+                              >
+
+                                {
+                                  subject.mark
+                                }
+
+                              </td>
+
+                            </tr>
+
+                          )
+                        )}
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
 
 
-                    <span className="font-semibold">
 
-                      Total Mark
+                  {/* TOTAL */}
 
-                    </span>
+                  <div
+                    className="
+                      p-6
+                      bg-slate-50
+                    "
+                  >
+
+                    <div
+                      className="
+                        flex
+                        justify-between
+                      "
+                    >
+
+                      <span
+                        className="
+                          font-semibold
+                        "
+                      >
+
+                        Total Mark
+
+                      </span>
 
 
-                    <span className="
-                      font-bold
-                      text-xl
-                    ">
+                      <span
+                        className="
+                          font-bold
+                          text-xl
+                        "
+                      >
 
-                      {student.total}
+                        {student.total}
 
-                    </span>
+                      </span>
 
+                    </div>
 
                   </div>
 
 
                 </div>
 
-
-              </div>
-
-            ))}
+              )
+            )}
 
           </div>
 
         )}
-
 
       </div>
 

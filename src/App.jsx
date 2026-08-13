@@ -7,130 +7,258 @@ const API_URL =
 export default function App() {
   const [enrolNo, setEnrolNo] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Student information
+  const [student, setStudent] = useState(null);
+
+  // Individual results
   const [results, setResults] = useState([]);
+
   const [error, setError] = useState("");
+
 
   // ============================================================
   // SEARCH RESULT
   // ============================================================
 
   const handleSearch = async () => {
-    const enrollment = enrolNo.trim();
+
+    const enrollment =
+      enrolNo.trim();
+
 
     if (!enrollment) {
-      setError("Please enter your enrolment number");
+
+      setError(
+        "Please enter your enrolment number"
+      );
+
+      setStudent(null);
       setResults([]);
+
       return;
     }
 
+
     setLoading(true);
     setError("");
+    setStudent(null);
     setResults([]);
 
+
     try {
+
       const url =
-        `${API_URL}?enrol=${encodeURIComponent(enrollment)}`;
+        `${API_URL}?enrol=${encodeURIComponent(
+          enrollment
+        )}`;
 
-      console.log("=================================");
-      console.log("REQUEST URL:", url);
-      console.log("=================================");
 
-      const response = await fetch(url, {
-        method: "GET",
-      });
+      console.log(
+        "================================="
+      );
 
-      console.log("HTTP STATUS:", response.status);
-      console.log("RESPONSE TYPE:", response.type);
-      console.log("RESPONSE URL:", response.url);
+      console.log(
+        "REQUEST URL:",
+        url
+      );
+
+      console.log(
+        "================================="
+      );
+
+
+      const response =
+        await fetch(
+          url,
+          {
+            method: "GET",
+          }
+        );
+
+
+      console.log(
+        "HTTP STATUS:",
+        response.status
+      );
+
+      console.log(
+        "RESPONSE TYPE:",
+        response.type
+      );
+
+      console.log(
+        "RESPONSE URL:",
+        response.url
+      );
+
 
       if (!response.ok) {
+
         throw new Error(
           `HTTP error ${response.status}`
         );
+
       }
 
-      const text = await response.text();
 
-      console.log("RAW API RESPONSE:", text);
+      const text =
+        await response.text();
+
+
+      console.log(
+        "RAW API RESPONSE:",
+        text
+      );
+
 
       let data;
 
+
       try {
-        data = JSON.parse(text);
+
+        data =
+          JSON.parse(text);
+
       } catch (jsonError) {
+
         console.error(
           "JSON PARSE ERROR:",
           jsonError
         );
 
+
         throw new Error(
           "API did not return valid JSON"
         );
+
       }
 
-      console.log("PARSED API RESPONSE:", data);
+
+      console.log(
+        "PARSED API RESPONSE:",
+        data
+      );
+
+
+      // ========================================================
+      // API ERROR
+      // ========================================================
 
       if (data.error) {
+
         setError(
-          data.message || "Server error"
+          data.message ||
+          "Server error"
         );
+
         return;
+
       }
+
+
+      // ========================================================
+      // RESULT NOT FOUND
+      // ========================================================
 
       if (!data.found) {
+
         setError(
-          data.message || "Result not found"
+          data.message ||
+          "Result not found"
         );
+
         return;
+
       }
 
-      setResults(data.results || []);
+
+      // ========================================================
+      // STUDENT INFORMATION
+      // ========================================================
+
+      setStudent(
+        data.student || null
+      );
+
+
+      // ========================================================
+      // ALL YEAR / COURSE RESULTS
+      // ========================================================
+
+      setResults(
+        data.results || []
+      );
+
 
     } catch (error) {
+
       console.error(
         "================================="
       );
+
 
       console.error(
         "FULL API ERROR:",
         error
       );
 
+
       console.error(
         "ERROR MESSAGE:",
         error.message
       );
 
+
       console.error(
         "================================="
       );
+
 
       setError(
         error.message ||
         "Unable to fetch result. Please try again."
       );
 
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
+
 
   // ============================================================
   // ENTER KEY
   // ============================================================
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+
+    if (
+      event.key === "Enter"
+    ) {
+
       handleSearch();
+
     }
+
   };
+
 
   // ============================================================
   // UI
   // ============================================================
 
   return (
-    <div className="min-h-screen bg-slate-100">
+
+    <div
+      className="
+        min-h-screen
+        bg-slate-100
+      "
+    >
 
       {/* ========================================================
           HEADER
@@ -145,6 +273,7 @@ export default function App() {
           shadow-lg
         "
       >
+
         <div
           className="
             max-w-6xl
@@ -152,6 +281,7 @@ export default function App() {
             px-4
           "
         >
+
           <h1
             className="
               text-3xl
@@ -162,6 +292,7 @@ export default function App() {
             THE BEE ACADEMY
           </h1>
 
+
           <p
             className="
               mt-2
@@ -170,7 +301,9 @@ export default function App() {
           >
             Examination Results
           </p>
+
         </div>
+
       </header>
 
 
@@ -227,9 +360,15 @@ export default function App() {
               placeholder="Enter Enrol Number"
               value={enrolNo}
               onChange={(event) => {
-                setEnrolNo(event.target.value);
+
+                setEnrolNo(
+                  event.target.value
+                );
+
               }}
-              onKeyDown={handleKeyDown}
+              onKeyDown={
+                handleKeyDown
+              }
               disabled={loading}
               className="
                 border
@@ -262,10 +401,12 @@ export default function App() {
                 disabled:cursor-not-allowed
               "
             >
+
               {loading
                 ? "Searching..."
                 : "Search"
               }
+
             </button>
 
           </div>
@@ -278,6 +419,7 @@ export default function App() {
         ====================================================== */}
 
         {loading && (
+
           <div
             className="
               bg-white
@@ -292,17 +434,42 @@ export default function App() {
               justify-center
             "
           >
+
             {/* LOADER */}
-            <div className="relative flex h-20 w-20 items-center justify-center">
+
+            <div
+              className="
+                relative
+                flex
+                h-20
+                w-20
+                items-center
+                justify-center
+              "
+            >
+
               <Loader2
-                className="h-20 w-20 animate-spin text-indigo-600"
+                className="
+                  h-20
+                  w-20
+                  animate-spin
+                  text-indigo-600
+                "
                 strokeWidth={1.5}
               />
+
               <Shirt
-                className="absolute h-7 w-7 text-amber-500"
+                className="
+                  absolute
+                  h-7
+                  w-7
+                  text-amber-500
+                "
                 strokeWidth={1.75}
               />
+
             </div>
+
 
             <p
               className="
@@ -322,13 +489,51 @@ export default function App() {
               Tailoring your results
             </p>
 
-            <div className="mt-3 flex gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-[fade-dot_1.4s_ease-in-out_infinite]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-[fade-dot_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-[fade-dot_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
+
+            <div
+              className="
+                mt-3
+                flex
+                gap-1.5
+              "
+            >
+
+              <span
+                className="
+                  h-1.5
+                  w-1.5
+                  rounded-full
+                  bg-indigo-500
+                  animate-[fade-dot_1.4s_ease-in-out_infinite]
+                "
+              />
+
+              <span
+                className="
+                  h-1.5
+                  w-1.5
+                  rounded-full
+                  bg-amber-500
+                  animate-[fade-dot_1.4s_ease-in-out_infinite]
+                  [animation-delay:0.2s]
+                "
+              />
+
+              <span
+                className="
+                  h-1.5
+                  w-1.5
+                  rounded-full
+                  bg-indigo-500
+                  animate-[fade-dot_1.4s_ease-in-out_infinite]
+                  [animation-delay:0.4s]
+                "
+              />
+
             </div>
 
           </div>
+
         )}
 
 
@@ -337,6 +542,7 @@ export default function App() {
         ====================================================== */}
 
         {error && (
+
           <div
             className="
               bg-red-50
@@ -350,6 +556,7 @@ export default function App() {
           >
             {error}
           </div>
+
         )}
 
 
@@ -399,7 +606,9 @@ export default function App() {
                   text-gray-900
                 "
               >
-                {results[0].name}
+                {student?.name ||
+                  results[0]?.name ||
+                  "Student"}
               </h2>
 
 
@@ -410,194 +619,246 @@ export default function App() {
                 "
               >
                 Enrol No:{" "}
-                {results[0].enrol_no}
+
+                {student?.enrol_no ||
+                  results[0]?.enrol_no ||
+                  enrolNo}
+
               </p>
 
             </div>
 
 
             {/* ==================================================
-                ALL RESULTS
+                YEAR / COURSE RESULTS
             ================================================== */}
 
-            {results.map((student, index) => (
-
-              <div
-                key={`${student.sheet}-${index}`}
-                className="
-                  bg-white
-                  rounded-2xl
-                  shadow-lg
-                  overflow-hidden
-                "
-              >
-
-                {/* =================================================
-                    COURSE HEADER
-                ================================================= */}
+            {results.map(
+              (result, index) => (
 
                 <div
+                  key={`${result.course}-${result.year}-${index}`}
                   className="
-                    p-6
-                    border-b
+                    bg-white
+                    rounded-2xl
+                    shadow-lg
+                    overflow-hidden
                   "
                 >
 
-                  <p
-                    className="
-                      text-sm
-                      font-semibold
-                      text-indigo-600
-                      uppercase
-                      tracking-wide
-                    "
-                  >
-                    {student.course}
-                  </p>
-
-
-                  <h3
-                    className="
-                      text-2xl
-                      font-bold
-                      mt-1
-                      text-gray-900
-                    "
-                  >
-                    {student.year}
-                  </h3>
-
-                </div>
-
-
-                {/* =================================================
-                    SUBJECT TABLE
-                ================================================= */}
-
-                <div className="overflow-x-auto">
-
-                  <table className="w-full">
-
-                    <thead>
-
-                      <tr className="bg-gray-100">
-
-                        <th
-                          className="
-                            text-left
-                            p-4
-                            font-semibold
-                            text-gray-700
-                          "
-                        >
-                          Subject
-                        </th>
-
-
-                        <th
-                          className="
-                            text-right
-                            p-4
-                            font-semibold
-                            text-gray-700
-                          "
-                        >
-                          Mark
-                        </th>
-
-                      </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                      {student.subjects?.map(
-                        (subject, subjectIndex) => (
-
-                          <tr
-                            key={subjectIndex}
-                            className="border-t"
-                          >
-
-                            <td
-                              className="
-                                p-4
-                                text-gray-700
-                              "
-                            >
-                              {subject.subject}
-                            </td>
-
-
-                            <td
-                              className="
-                                p-4
-                                text-right
-                                font-semibold
-                              "
-                            >
-                              {subject.mark}
-                            </td>
-
-                          </tr>
-
-                        )
-                      )}
-
-                    </tbody>
-
-                  </table>
-
-                </div>
-
-
-                {/* =================================================
-                    TOTAL
-                ================================================= */}
-
-                <div
-                  className="
-                    p-6
-                    bg-slate-50
-                  "
-                >
+                  {/* ============================================
+                      COURSE + YEAR HEADER
+                  ============================================ */}
 
                   <div
                     className="
-                      flex
-                      justify-between
-                      items-center
+                      p-6
+                      border-b
                     "
                   >
 
-                    <span
+                    <p
                       className="
+                        text-sm
                         font-semibold
-                        text-gray-700
+                        text-indigo-600
+                        uppercase
+                        tracking-wide
                       "
                     >
-                      Total Mark
-                    </span>
+                      {result.course}
+                    </p>
 
 
-                    <span
+                    <h3
                       className="
+                        text-2xl
                         font-bold
-                        text-xl
+                        mt-1
                         text-gray-900
                       "
                     >
-                      {student.total}
-                    </span>
+                      {result.year}
+                    </h3>
+
+                  </div>
+
+
+                  {/* ============================================
+                      SUBJECT TABLE
+                  ============================================ */}
+
+                  <div
+                    className="
+                      overflow-x-auto
+                    "
+                  >
+
+                    <table
+                      className="
+                        w-full
+                      "
+                    >
+
+                      <thead>
+
+                        <tr
+                          className="
+                            bg-gray-100
+                          "
+                        >
+
+                          <th
+                            className="
+                              text-left
+                              p-4
+                              font-semibold
+                              text-gray-700
+                            "
+                          >
+                            Subject
+                          </th>
+
+
+                          <th
+                            className="
+                              text-right
+                              p-4
+                              font-semibold
+                              text-gray-700
+                            "
+                          >
+                            Mark
+                          </th>
+
+                        </tr>
+
+                      </thead>
+
+
+                      <tbody>
+
+                        {result.subjects?.map(
+                          (
+                            subject,
+                            subjectIndex
+                          ) => (
+
+                            <tr
+                              key={
+                                subjectIndex
+                              }
+                              className="
+                                border-t
+                              "
+                            >
+
+                              <td
+                                className="
+                                  p-4
+                                  text-gray-700
+                                "
+                              >
+                                {
+                                  subject.subject
+                                }
+                              </td>
+
+
+                              <td
+                                className="
+                                  p-4
+                                  text-right
+                                  font-semibold
+                                "
+                              >
+                                {
+                                  subject.mark
+                                }
+                              </td>
+
+                            </tr>
+
+                          )
+                        )}
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
+
+
+                  {/* ============================================
+                      TOTAL + PASS
+                  ============================================ */}
+
+                  <div
+                    className="
+                      p-6
+                      bg-slate-50
+                    "
+                  >
+
+                    <div
+                      className="
+                        flex
+                        justify-between
+                        items-center
+                      "
+                    >
+
+                      <span
+                        className="
+                          font-semibold
+                          text-gray-700
+                        "
+                      >
+                        Total Mark
+                      </span>
+
+
+                      <div
+                        className="
+                          flex
+                          flex-col
+                          items-end
+                        "
+                      >
+
+                        <span
+                          className="
+                            font-bold
+                            text-xl
+                            text-gray-900
+                          "
+                        >
+                          {result.total}
+                        </span>
+
+
+                        <span
+                          className="
+                            mt-1
+                            text-sm
+                            font-bold
+                            text-green-600
+                          "
+                        >
+                          {result.status ||
+                            "PASS"}
+                        </span>
+
+                      </div>
+
+                    </div>
 
                   </div>
 
                 </div>
 
-              </div>
-
-            ))}
+              )
+            )}
 
           </div>
 
@@ -606,5 +867,7 @@ export default function App() {
       </main>
 
     </div>
+
   );
+
 }

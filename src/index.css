@@ -1,27 +1,5 @@
 @import "tailwindcss";
 
-@keyframes thread-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes needle-glide {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-6deg);
-  }
-  50% {
-    transform: translateY(-5px) rotate(6deg);
-  }
-}
-
-@keyframes stitch-flow {
-  to {
-    stroke-dashoffset: -40;
-  }
-}
-
 @keyframes shimmer-text {
   0% {
     background-position: 200% 0;

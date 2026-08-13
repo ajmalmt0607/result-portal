@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Loader2, Shirt } from "lucide-react";
 
 const API_URL =
   "https://script.google.com/macros/s/AKfycbzlO179QjY43iWzknl722cGDSaaVmaHGdgz6kUzsD6x8ksL-O5ufa4ocSlCqrucgZ9d/exec";
@@ -291,64 +292,16 @@ export default function App() {
               justify-center
             "
           >
-            {/* NEEDLE & THREAD LOADER */}
-            <div className="relative h-24 w-24">
-
-              <svg
-                viewBox="0 0 100 100"
-                className="h-24 w-24 animate-[thread-spin_3s_linear_infinite]"
-              >
-                <defs>
-                  <linearGradient
-                    id="loaderGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stopColor="#4f46e5" />
-                    <stop offset="100%" stopColor="#f59e0b" />
-                  </linearGradient>
-                </defs>
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  fill="none"
-                  stroke="url(#loaderGradient)"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeDasharray="6 10"
-                />
-              </svg>
-
-              <div className="absolute inset-0 flex items-center justify-center animate-[needle-glide_1.6s_ease-in-out_infinite]">
-                <svg
-                  width="34"
-                  height="34"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="drop-shadow-sm"
-                >
-                  <path
-                    d="M3.5 20.5L13 11"
-                    stroke="#f59e0b"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeDasharray="2 2.6"
-                    className="animate-[stitch-flow_1s_linear_infinite]"
-                  />
-                  <path
-                    d="M12 11.5L18.7 4.8a2.1 2.1 0 0 1 3 3L14.5 14.5"
-                    stroke="#4338ca"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="20" cy="3.5" r="1.15" fill="#4338ca" />
-                </svg>
-              </div>
-
+            {/* LOADER */}
+            <div className="relative flex h-20 w-20 items-center justify-center">
+              <Loader2
+                className="h-20 w-20 animate-spin text-indigo-600"
+                strokeWidth={1.5}
+              />
+              <Shirt
+                className="absolute h-7 w-7 text-amber-500"
+                strokeWidth={1.75}
+              />
             </div>
 
             <p

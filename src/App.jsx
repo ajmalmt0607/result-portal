@@ -419,9 +419,11 @@ export default function App() {
               text-3xl
               md:text-4xl
               font-bold
+              uppercase
+              tracking-wide
             "
           >
-            THE BEE ACADEMY
+            {selectedAcademy.name}
           </h1>
 
 

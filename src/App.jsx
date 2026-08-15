@@ -1,20 +1,124 @@
-import { useState } from "react";
-import { Loader2, Shirt } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Building2,
+  Check,
+  ChevronDown,
+  GraduationCap,
+  Loader2,
+  Shirt,
+} from "lucide-react";
 
-const API_URL =
-  "https://script.google.com/macros/s/AKfycbzlO179QjY43iWzknl722cGDSaaVmaHGdgz6kUzsD6x8ksL-O5ufa4ocSlCqrucgZ9d/exec";
+
+// ============================================================
+// API URLS
+// ============================================================
+
+const API_URLS = {
+
+  bee:
+    "https://script.google.com/macros/s/AKfycbzlO179QjY43iWzknl722cGDSaaVmaHGdgz6kUzsD6x8ksL-O5ufa4ocSlCqrucgZ9d/exec",
+
+  bridge:
+    "https://script.google.com/macros/s/AKfycby9i5fnrZNhXJdOd7FZ1nzUaLoPkzRuoolJfZmfOTg5u5UB7ZSvPFICvRupHPN78hzd/exec"
+
+};
+
+
+// ============================================================
+// ACADEMY OPTIONS
+// ============================================================
+
+const ACADEMIES = [
+
+  {
+    id: "bee",
+    name: "The Bee Academy",
+    icon: GraduationCap,
+  },
+
+  {
+    id: "bridge",
+    name: "Bridge Academy",
+    icon: Building2,
+  },
+
+];
+
 
 export default function App() {
-  const [enrolNo, setEnrolNo] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const [academy, setAcademy] =
+    useState("bee");
+
+
+  const [enrolNo, setEnrolNo] =
+    useState("");
+
+
+  const [loading, setLoading] =
+    useState(false);
+
 
   // Student information
-  const [student, setStudent] = useState(null);
+  const [student, setStudent] =
+    useState(null);
+
 
   // Individual results
-  const [results, setResults] = useState([]);
+  const [results, setResults] =
+    useState([]);
 
-  const [error, setError] = useState("");
+
+  const [error, setError] =
+    useState("");
+
+
+  // Academy dropdown open state
+  const [academyOpen, setAcademyOpen] =
+    useState(false);
+
+  const academyRef = useRef(null);
+
+  const selectedAcademy =
+    ACADEMIES.find(
+      (item) => item.id === academy
+    ) || ACADEMIES[0];
+
+
+  // ============================================================
+  // CLOSE ACADEMY DROPDOWN ON OUTSIDE CLICK
+  // ============================================================
+
+  useEffect(() => {
+
+    const handleClickOutside = (event) => {
+
+      if (
+        academyRef.current &&
+        !academyRef.current.contains(event.target)
+      ) {
+
+        setAcademyOpen(false);
+
+      }
+
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+    return () => {
+
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+
+    };
+
+  }, []);
 
 
   // ============================================================
@@ -37,25 +141,51 @@ export default function App() {
       setResults([]);
 
       return;
+
     }
 
 
     setLoading(true);
+
     setError("");
+
     setStudent(null);
+
     setResults([]);
 
 
     try {
 
+      // ========================================================
+      // SELECT API BASED ON ACADEMY
+      // ========================================================
+
+      const apiUrl =
+        API_URLS[academy];
+
+
+      if (!apiUrl) {
+
+        throw new Error(
+          "API URL is not configured"
+        );
+
+      }
+
+
       const url =
-        `${API_URL}?enrol=${encodeURIComponent(
+        `${apiUrl}?enrol=${encodeURIComponent(
           enrollment
         )}`;
 
 
       console.log(
         "================================="
+      );
+
+      console.log(
+        "ACADEMY:",
+        academy
       );
 
       console.log(
@@ -72,7 +202,7 @@ export default function App() {
         await fetch(
           url,
           {
-            method: "GET",
+            method: "GET"
           }
         );
 
@@ -82,10 +212,12 @@ export default function App() {
         response.status
       );
 
+
       console.log(
         "RESPONSE TYPE:",
         response.type
       );
+
 
       console.log(
         "RESPONSE URL:",
@@ -344,6 +476,219 @@ export default function App() {
           </h2>
 
 
+          {/* ====================================================
+              ACADEMY SELECT
+          ==================================================== */}
+
+          <div
+            className="mb-4 relative"
+            ref={academyRef}
+          >
+
+            <label
+              className="
+                block
+                text-sm
+                font-medium
+                text-gray-700
+                mb-2
+              "
+            >
+              Academy
+            </label>
+
+
+            {/* TRIGGER */}
+
+            <button
+              type="button"
+              onClick={() => {
+                setAcademyOpen((open) => !open);
+              }}
+              disabled={loading}
+              aria-haspopup="listbox"
+              aria-expanded={academyOpen}
+              className="
+                w-full
+                flex
+                items-center
+                justify-between
+                gap-3
+                border
+                border-gray-300
+                rounded-lg
+                p-2.5
+                bg-white
+                text-left
+                transition-colors
+                hover:border-indigo-400
+                focus:outline-none
+                focus:ring-2
+                focus:ring-indigo-500
+                disabled:bg-gray-100
+                disabled:cursor-not-allowed
+              "
+            >
+
+              <span
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
+
+                <span
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    items-center
+                    justify-center
+                    rounded-lg
+                    bg-indigo-50
+                    text-indigo-600
+                  "
+                >
+                  <selectedAcademy.icon
+                    className="h-5 w-5"
+                    strokeWidth={1.75}
+                  />
+                </span>
+
+                <span className="font-medium text-gray-900">
+                  {selectedAcademy.name}
+                </span>
+
+              </span>
+
+              <ChevronDown
+                className={`
+                  h-5 w-5 text-gray-400 transition-transform
+                  ${academyOpen ? "rotate-180" : ""}
+                `}
+              />
+
+            </button>
+
+
+            {/* LIST */}
+
+            {academyOpen && (
+
+              <div
+                role="listbox"
+                className="
+                  absolute
+                  z-10
+                  mt-2
+                  w-full
+                  rounded-xl
+                  border
+                  border-gray-100
+                  bg-white
+                  py-1.5
+                  shadow-xl
+                  shadow-indigo-950/10
+                  animate-[dropdown-in_0.15s_ease-out]
+                "
+              >
+
+                {ACADEMIES.map((item) => {
+
+                  const Icon = item.icon;
+                  const isSelected = item.id === academy;
+
+                  return (
+
+                    <button
+                      key={item.id}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+
+                        setAcademy(item.id);
+                        setStudent(null);
+                        setResults([]);
+                        setError("");
+                        setAcademyOpen(false);
+
+                      }}
+                      className={`
+                        w-full
+                        flex
+                        items-center
+                        gap-3
+                        px-3
+                        py-2.5
+                        text-left
+                        transition-colors
+                        ${isSelected
+                          ? "bg-indigo-50"
+                          : "hover:bg-gray-50"
+                        }
+                      `}
+                    >
+
+                      <span
+                        className={`
+                          flex
+                          h-9
+                          w-9
+                          items-center
+                          justify-center
+                          rounded-lg
+                          transition-colors
+                          ${isSelected
+                            ? "bg-indigo-600 text-white"
+                            : "bg-gray-100 text-gray-500"
+                          }
+                        `}
+                      >
+                        <Icon
+                          className="h-5 w-5"
+                          strokeWidth={1.75}
+                        />
+                      </span>
+
+                      <span
+                        className={`
+                          flex-1
+                          font-medium
+                          ${isSelected
+                            ? "text-indigo-700"
+                            : "text-gray-700"
+                          }
+                        `}
+                      >
+                        {item.name}
+                      </span>
+
+                      {isSelected && (
+                        <Check
+                          className="h-4 w-4 text-indigo-600"
+                          strokeWidth={2.5}
+                        />
+                      )}
+
+                    </button>
+
+                  );
+
+                })}
+
+              </div>
+
+            )}
+
+          </div>
+
+
+          {/* ====================================================
+              ENROLLMENT + SEARCH
+          ==================================================== */}
+
           <div
             className="
               flex
@@ -435,8 +780,6 @@ export default function App() {
             "
           >
 
-            {/* LOADER */}
-
             <div
               className="
                 relative
@@ -457,6 +800,7 @@ export default function App() {
                 "
                 strokeWidth={1.5}
               />
+
 
               <Shirt
                 className="
@@ -508,6 +852,7 @@ export default function App() {
                 "
               />
 
+
               <span
                 className="
                   h-1.5
@@ -518,6 +863,7 @@ export default function App() {
                   [animation-delay:0.2s]
                 "
               />
+
 
               <span
                 className="
@@ -630,14 +976,16 @@ export default function App() {
 
 
             {/* ==================================================
-                YEAR / COURSE RESULTS
+                ALL COURSE / YEAR RESULTS
             ================================================== */}
 
             {results.map(
               (result, index) => (
 
                 <div
-                  key={`${result.course}-${result.year}-${index}`}
+                  key={
+                    `${result.course}-${result.year}-${index}`
+                  }
                   className="
                     bg-white
                     rounded-2xl
@@ -646,9 +994,9 @@ export default function App() {
                   "
                 >
 
-                  {/* ============================================
-                      COURSE + YEAR HEADER
-                  ============================================ */}
+                  {/* ==========================================
+                      COURSE + YEAR
+                  ========================================== */}
 
                   <div
                     className="
@@ -684,9 +1032,9 @@ export default function App() {
                   </div>
 
 
-                  {/* ============================================
-                      SUBJECT TABLE
-                  ============================================ */}
+                  {/* ==========================================
+                      SUBJECTS
+                  ========================================== */}
 
                   <div
                     className="
@@ -789,9 +1137,9 @@ export default function App() {
                   </div>
 
 
-                  {/* ============================================
+                  {/* ==========================================
                       TOTAL + PASS
-                  ============================================ */}
+                  ========================================== */}
 
                   <div
                     className="

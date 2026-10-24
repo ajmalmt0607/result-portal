@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  // Building2,
+  Building2,
   Check,
   ChevronDown,
-  GraduationCap,
+  // GraduationCap,
   Loader2,
   Shirt,
 } from "lucide-react";
@@ -15,11 +15,11 @@ import {
 
 const API_URLS = {
 
-  bee:
-    "https://script.google.com/macros/s/AKfycbxcgAWOqVfqE55JvhRBe_uUgfhvvuOtkbRsn0wUgWS9pHBR2qHryz48lo2S9dKlD8AF/exec",
+  // bee:
+  //   "https://script.google.com/macros/s/AKfycbxcgAWOqVfqE55JvhRBe_uUgfhvvuOtkbRsn0wUgWS9pHBR2qHryz48lo2S9dKlD8AF/exec",
 
-  // bridge:
-  //   "https://script.google.com/macros/s/AKfycby9i5fnrZNhXJdOd7FZ1nzUaLoPkzRuoolJfZmfOTg5u5UB7ZSvPFICvRupHPN78hzd/exec"
+  bridge:
+    "https://script.google.com/macros/s/AKfycbxcgAWOqVfqE55JvhRBe_uUgfhvvuOtkbRsn0wUgWS9pHBR2qHryz48lo2S9dKlD8AF/exec"
 
 };
 
@@ -30,17 +30,17 @@ const API_URLS = {
 
 const ACADEMIES = [
 
-  {
-    id: "bee",
-    name: "The Bee Academy",
-    icon: GraduationCap,
-  },
-
   // {
-  //   id: "bridge",
-  //   name: "Bridge Academy",
-  //   icon: Building2,
+  //   id: "bee",
+  //   name: "The Bee Academy",
+  //   icon: GraduationCap,
   // },
+
+  {
+    id: "bridge",
+    name: "Bridge Academy",
+    icon: Building2,
+  },
 
 ];
 
@@ -48,7 +48,7 @@ const ACADEMIES = [
 export default function App() {
 
   const [academy, setAcademy] =
-    useState("bee");
+    useState("bridge");
 
 
   const [enrolNo, setEnrolNo] =

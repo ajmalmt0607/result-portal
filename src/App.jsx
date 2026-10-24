@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Building2,
+  // Building2,
   Check,
   ChevronDown,
   GraduationCap,
@@ -16,10 +16,10 @@ import {
 const API_URLS = {
 
   bee:
-    "https://script.google.com/macros/s/AKfycbzlO179QjY43iWzknl722cGDSaaVmaHGdgz6kUzsD6x8ksL-O5ufa4ocSlCqrucgZ9d/exec",
+    "https://script.google.com/macros/s/AKfycbxcgAWOqVfqE55JvhRBe_uUgfhvvuOtkbRsn0wUgWS9pHBR2qHryz48lo2S9dKlD8AF/exec",
 
-  bridge:
-    "https://script.google.com/macros/s/AKfycby9i5fnrZNhXJdOd7FZ1nzUaLoPkzRuoolJfZmfOTg5u5UB7ZSvPFICvRupHPN78hzd/exec"
+  // bridge:
+  //   "https://script.google.com/macros/s/AKfycby9i5fnrZNhXJdOd7FZ1nzUaLoPkzRuoolJfZmfOTg5u5UB7ZSvPFICvRupHPN78hzd/exec"
 
 };
 
@@ -36,11 +36,11 @@ const ACADEMIES = [
     icon: GraduationCap,
   },
 
-  {
-    id: "bridge",
-    name: "Bridge Academy",
-    icon: Building2,
-  },
+  // {
+  //   id: "bridge",
+  //   name: "Bridge Academy",
+  //   icon: Building2,
+  // },
 
 ];
 
